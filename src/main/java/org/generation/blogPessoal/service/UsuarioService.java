@@ -18,7 +18,7 @@ public class UsuarioService {
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-	
+
 	/**
 	 * 
 	 * 
@@ -27,19 +27,17 @@ public class UsuarioService {
 	public Optional<Usuario> cadastrarUsuario(Usuario usuario) {
 
 		if (usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent())
-			return Optional.empty();
-
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuario já existe!", null);
 		usuario.setSenha(criptografarSenha(usuario.getSenha()));
-
 		return Optional.of(usuarioRepository.save(usuario));
 
 	}
-	
+
 	/**
 	 * 
 	 * 
 	 */
-	
+
 	public Optional<Usuario> atualizarUsuario(Usuario usuario) {
 
 		if (usuarioRepository.findById(usuario.getId()).isPresent()) {
@@ -48,9 +46,7 @@ public class UsuarioService {
 
 			if ((buscaUsuario.isPresent()) && (buscaUsuario.get().getId() != usuario.getId()))
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já existe!", null);
-
 			usuario.setSenha(criptografarSenha(usuario.getSenha()));
-
 			return Optional.ofNullable(usuarioRepository.save(usuario));
 
 		}
@@ -58,13 +54,13 @@ public class UsuarioService {
 		return Optional.empty();
 
 	}
-	
+
 	/**
 	 * 
 	 * 
 	 */
-	
-	public Optional<UserLogin> login (Optional<UserLogin> usuarioLogin) {
+
+	public Optional<UserLogin> login(Optional<UserLogin> usuarioLogin) {
 
 		Optional<Usuario> usuario = usuarioRepository.findByUsuario(usuarioLogin.get().getUsuario());
 
@@ -83,21 +79,22 @@ public class UsuarioService {
 			}
 		}
 
-		return Optional.empty();
+		throw new ResponseStatusException(
+				HttpStatus.UNAUTHORIZED, "Usuário ou senha inválidos!", null);
 	}
-	
+
 	/**
 	 * 
 	 * 
 	 */
-	
+
 	private String criptografarSenha(String senha) {
 
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 		return encoder.encode(senha);
 	}
-	
+
 	/**
 	 * 
 	 * 
@@ -110,12 +107,12 @@ public class UsuarioService {
 		return encoder.matches(senhaDigitada, senhaBanco);
 
 	}
-	
+
 	/**
 	 * 
 	 * 
 	 */
-	
+
 	private String gerarBasicToken(String usuario, String senha) {
 
 		String token = usuario + ":" + senha;
