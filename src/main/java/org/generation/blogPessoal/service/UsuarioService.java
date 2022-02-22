@@ -60,7 +60,7 @@ public class UsuarioService {
 	 * 
 	 */
 
-	public Optional<UserLogin> login(Optional<UserLogin> usuarioLogin) {
+	public Optional<UserLogin> login (Optional<UserLogin> usuarioLogin) {
 
 		Optional<Usuario> usuario = usuarioRepository.findByUsuario(usuarioLogin.get().getUsuario());
 
@@ -71,8 +71,8 @@ public class UsuarioService {
 				usuarioLogin.get().setId(usuario.get().getId());
 				usuarioLogin.get().setNome(usuario.get().getNome());
 				usuarioLogin.get().setFoto(usuario.get().getFoto());
-				usuarioLogin.get()
-						.setToken(gerarBasicToken(usuarioLogin.get().getUsuario(), usuarioLogin.get().getSenha()));
+				usuarioLogin.get().setToken(gerarBasicToken(usuarioLogin.get().getUsuario(), usuarioLogin.get().getSenha()));
+				usuarioLogin.get().setUsuario(usuario.get().getUsuario());
 				usuarioLogin.get().setSenha(usuario.get().getSenha());
 				usuarioLogin.get().setTipo(usuario.get().getTipo());
 
